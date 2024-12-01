@@ -339,7 +339,7 @@ class IteratorRangeMutator:
         return self.pattern.mutate(line)
 
 
-def get_mutators():
+def get_mutators(mutator_ids=None):
     mutators = [
         LineDeletionMutator(),
         LogicalOperatorMutator(),
@@ -357,5 +357,8 @@ def get_mutators():
         HexNumberLiteralMutator(),
         IteratorRangeMutator()
     ]
+
+    if mutator_ids:
+        mutators = [mutator for mutator in mutators if mutator.mutator_id in mutator_ids]
 
     return {mutator.mutator_id: mutator for mutator in mutators}

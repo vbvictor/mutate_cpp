@@ -351,8 +351,9 @@ def route_v2_project_project_id_files_file_id_generate(project_id, file_id):
         except ValueError:
             last_line = -1
 
+        mutators = [key for key in request.form if key not in ['first_line', 'last_line']]
         s = SourceFile(file, first_line, last_line)
-        s.generate_patches()
+        s.generate_patches(mutators)
         flash('Successfully created patches.', category='message')
         return redirect(url_for('route_v2_project_project_id', project_id=project.id))
 

@@ -19,7 +19,14 @@ def main():
         "--project", type=str, required=True,
         help="The name of the project. If not provided, all projects will be processed."
     )
-    # TODO allow selection of first/last line + which patches to generate
+    argument_parser.add_argument(
+        "--files", type=str,
+        help='File list in format: "file1@start:end;file2@start:end". If not provided, all files in project will be used.'
+    )
+    argument_parser.add_argument(
+        "--mutators", type=str,
+        help="Comma-separated list of mutators to use. If not provided, all mutators will be used."
+    )
     arguments = argument_parser.parse_args()
 
     # Verify that the project exists
@@ -35,10 +42,28 @@ def main():
         print("No files found to process.")
         exit(2)
 
+    # Parse mutators if specified
+    mutator_ids = arguments.mutators.split(',') if arguments.mutators else None
+
+    # Parse file filters if specified
+    file_filters = {}
+    if arguments.files:
+        for file_spec in arguments.files.split(';'):
+            filename, line_range = file_spec.split('@')
+            first_line, last_line = map(int, line_range.split(':'))
+            file_filters[filename] = (first_line, last_line)
+
+    # Process files
     for file in files:
+        if file_filters and file.filename not in file_filters:
+            continue
+
         print(f"Generating patches for '{file.filename}'...")
-        source_file = SourceFile(file, 1, -1)
-        source_file.generate_patches()
+        
+        # If file_filters is empty use all lines of every file
+        first_line, last_line = file_filters.get(file.filename, (1, -1))
+        source_file = SourceFile(file, first_line, last_line)
+        source_file.generate_patches(mutator_ids)
 
     print("Done")
     exit(0)

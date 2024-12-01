@@ -145,8 +145,7 @@ we click on [example.cpp](http://127.0.0.1:5000/projects/1/files/1), we see the 
 
 - Next to "example.cpp", click on ["generate patches"](http://127.0.0.1:5000/projects/1/files/1/generate).
 - Leave "first line" and "last line" empty to mutate the whole file.
-- Right now, none of the check boxes are actually implemented, so you can ignore all of them - all mutations will be
-  used by default.
+- Select check boxes of mutations you want to use. If none is selected, all mutations will be used by default.
 - Click on "Generate patches".
 
 Back in the [project overview](http://127.0.0.1:5000/projects/1), you see that 14 patches have been generated. You can
@@ -275,11 +274,19 @@ venv/bin/python3 cli/add_files.py --project "Example project" /tmp/cmake-example
 ```
 
 ### `generate_patches.py`
-This script will generate patches for all files in a project.
+This script will generate patches for files in a project using selected mutators.
 
 Example usage:
 ```bash
 venv/bin/python3 cli/generate_patches.py --project "Example project"
+```
+
+Example usage with files and mutators:
+```bash
+venv/bin/python3 cli/generate_patches.py \
+  --project "Example project" \
+  --files /tmp/cmake-example/src/example.cpp:13:-1 \
+  --mutators logicalOperator,lineDeletion
 ```
 
 ### `queue_control.py`
@@ -289,6 +296,26 @@ Example usage:
 ```bash
 venv/bin/python3 cli/queue_control.py start
 ```
+
+## List of mutators
+
+| Mutator | Description |
+|----------|-------------|
+| lineDeletion | Deletes a whole line |
+| logicalOperator | Replaces logical operators (&&, \|\|, and, or, !, not) |
+| comparisonOperator | Replaces comparison operators (==, !=, <, >, <=, >=) |
+| incDecOperator | Swaps increment and decrement operators (++, --) |
+| assignmentOperator | Replaces assignment operators (=, +=, -=, *=, /=, %=) |
+| booleanAssignmentOperator | Replaces Boolean assignment operators (=, &=, \|=, ^=, <<=, >>=) |
+| arithmeticOperator | Replaces arithmetic operators (+, -, *, /, %) |
+| booleanArithmeticOperator | Replaces Boolean arithmetic operators (&, \|, ^, <<, >>) |
+| booleanLiteral | Swaps the Boolean literals true and false |
+| stdInserter | Changes the position where elements are inserted (front_inserter, back_inserter) |
+| stdRangePredicate | Changes the semantics of an STL range predicate (all_of, any_of, none_of) |
+| stdMinMax | Swaps STL minimum by maximum calls (min, max) |
+| decimalNumberLiteral | Replaces decimal number literals with different values |
+| hexNumberLiteral | Replaces hex number literals with different values |
+| iteratorRange | Changes an iterator range (begin, end) |
 
 ## Help!
 

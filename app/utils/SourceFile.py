@@ -25,8 +25,8 @@ class SourceFile:
         # read the relevant content
         self.content = '\n'.join(self.full_content[self.first_line - 1:self.last_line])  # type: str
 
-    def generate_patches(self):
-        mutators = get_mutators()
+    def generate_patches(self, mutator_ids):
+        mutators = get_mutators(mutator_ids)
 
         for line_number, line_raw in self.__get_lines():
             for mutator_name, mutator in mutators.items():
